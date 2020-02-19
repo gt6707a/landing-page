@@ -36,6 +36,10 @@ function buildNav() {
       a.textContent = sectionNode.getAttribute('data-nav');
       a.setAttribute('href', `#${sectionNode.id}`)
       a.classList.add('menu__link');
+      a.addEventListener('click', evt => {
+        document.querySelector('.your-active-class').classList.toggle('your-active-class');
+        document.querySelector(`[data-nav="${evt.target.textContent}"]`).classList.toggle('your-active-class');
+      });
       li.appendChild(a);
       documentFragment.appendChild(li);
     }
