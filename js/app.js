@@ -17,7 +17,7 @@
  * Define Global Variables
  *
 */
-
+const sectionNodes = document.querySelectorAll('[data-nav^="Section"]');
 
 /**
  * End Global Variables
@@ -25,20 +25,35 @@
  *
 */
 
-function buildNav() {
-  var sectionNodes = document.querySelectorAll('[data-nav^="Section"]');
+function debounce(delay, fn) {
+  let timerId;
+  return function (...args) {
+    if (timerId) {
+      clearTimeout(timerId);
+    }
+    timerId = setTimeout(() => {
+      fn(...args);
+      timerId = null;
+    }, delay);
+  }
+}
 
+function buildNav() {
   if (sectionNodes.length > 0) {
     const documentFragment = new DocumentFragment();
     for (const sectionNode of sectionNodes) {
       const li = document.createElement('li');
       const a = document.createElement('a');
       a.textContent = sectionNode.getAttribute('data-nav');
-      a.setAttribute('href', `#${sectionNode.id}`)
       a.classList.add('menu__link');
       a.addEventListener('click', evt => {
-        document.querySelector('.your-active-class').classList.toggle('your-active-class');
-        document.querySelector(`[data-nav="${evt.target.textContent}"]`).classList.toggle('your-active-class');
+        // document.querySelector('.your-active-class').classList.toggle('your-active-class');
+        const scrollToSection = document.querySelector(`[data-nav="${evt.target.textContent}"]`);
+        // scrollToSection.classList.toggle('your-active-class');
+        window.scrollTo({
+          top: scrollToSection.offsetTop,
+          behavior: 'smooth',
+        });
       });
       li.appendChild(a);
       documentFragment.appendChild(li);
@@ -59,10 +74,21 @@ function buildNav() {
 buildNav();
 
 // Add class 'active' to section when near top of viewport
+// Handle scroll event to add active class
+// to sections currently viewable in viewport.
+// Debounce so only update class after scrolling stops.
+window.addEventListener('scroll', debounce(500, () => {
+  sectionNodes.forEach(node => {
+    const { top, bottom } = node.getBoundingClientRect();
 
-
-// Scroll to anchor ID using scrollTO event
-
+    if (top >= (window.innerHeight || document.documentElement.clientHeight)
+      || bottom <= 0) {
+      node.classList.remove('your-active-class');
+    } else {
+      node.classList.add('your-active-class');
+    }
+  })
+}));
 
 /**
  * End Main Functions
