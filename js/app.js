@@ -25,6 +25,12 @@ const sectionNodes = document.querySelectorAll('[data-nav^="Section"]');
  *
 */
 
+/**
+ * Debounce the passed in function call by specified delay
+ * @param {*} delay
+ * @param {*} fn
+ * Credit: https://codeburst.io/throttling-and-debouncing-in-javascript-646d076d0a44
+ */
 function debounce(delay, fn) {
   let timerId;
   return function (...args) {
@@ -38,6 +44,10 @@ function debounce(delay, fn) {
   }
 }
 
+/**
+ * Dynamically builds navigation links given sections found in
+ * HTML
+ */
 function buildNav() {
   if (sectionNodes.length > 0) {
     const documentFragment = new DocumentFragment();
@@ -47,9 +57,8 @@ function buildNav() {
       a.textContent = sectionNode.getAttribute('data-nav');
       a.classList.add('menu__link');
       a.addEventListener('click', evt => {
-        // document.querySelector('.your-active-class').classList.toggle('your-active-class');
+        // find position of the targeted section and scroll to it
         const scrollToSection = document.querySelector(`[data-nav="${evt.target.textContent}"]`);
-        // scrollToSection.classList.toggle('your-active-class');
         window.scrollTo({
           top: scrollToSection.offsetTop,
           behavior: 'smooth',
